@@ -46,7 +46,7 @@ app.get('/', async (req,res) => {
 /////////// Populate communities
 
 async function add(req){
-  await User.updateMany({email:'j'}, {$push:{communities:req.body.communities}})
+  await User.updateMany({email:activeUser[0].email}, {$push:{communities:req.body.communities}})
 }
 app.post('/join',async(req,res)=>{
   add(req)
@@ -62,7 +62,18 @@ app.listen(4000, function(){
 app.get('/sign_in',(req,res)=>{
   res.render('login')
 })
-///////////
+///////////communities
+
+async function community(){
+  activeUser = await User.find({email:activeUser[0].email})
+  return activeUser
+}
+app.get('/communities',async (req,res)=>{
+
+  community();
+  //console.log(activeUser[0].communities)
+  await res.render('communities',{communities:activeUser[0].communities})
+})
 
 
 
