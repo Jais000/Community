@@ -1,27 +1,47 @@
+//plugins//
 const mongoose = require('mongoose');
 const express = require("express")
-var bodyParser = require("body-parser")
+let ejs = require('ejs')
 const Commune = require('./models/commune')
 const User = require('./models/user')
+const bodyParser = require("body-parser")
 
 
 
-
-const app = express()
-app.use(bodyParser.json())
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({
-  extended:true
-}))
-mongoose.connect('mongodb://localhost:27017/Community',{useNewUrlParser:true, useUnifiedTopology:true})
 
 var db = mongoose.connection;
+const app = express()
+mongoose.connect('mongodb://localhost:27017/Community')
+app.set("view engine","ejs");
 
-db.on('error',()=>console.log("Error in Connecting to Database"))
+app.use(bodyParser.urlencoded({extended:true}))
 
-db.once('open',()=>console.log("Connected to Database"))
+app.get('/', async (req,res) => {
+  User.find({community:"Hope Chapel"})
+  .then((result)=>{
+    var members = [];
+    result.forEach(member=>{
+      members.push(member.name);
+    })
+    res.render('Homepage', {Community:'Hope',members: members})
+  })
+  .catch((err)=>{console.log(err.message)})}
+);
 
-//user post
+app.get('/signup',(req,res)=>{
+  res.render('index')
+})
+
+app.listen(3000, function(){
+  console.log('running')})
+
+
+
+
+
+
+
+//user post///////////////////////////
 app.post("/sign_up",(req,res)=>{
   var name = req.body.name; 
   var email = req.body.email;
@@ -46,7 +66,8 @@ app.post("/sign_up",(req,res)=>{
   })
 })
 
-//community post
+
+//community post/////////////////////////////
 app.post("/commune",(req,res)=>{
   var name = req.body.name; 
   var address = req.body.address;
@@ -67,11 +88,5 @@ app.post("/commune",(req,res)=>{
   })
 })
 
-app.get('/', (req, res) => {
-  res.sendFile('index.html', {
-    root: './Dictionary/public'
-    })
-  }).listen(3000)
-console.log(mongoose.Collection)
 
-console.log("Listening on PORT 3000")
+
