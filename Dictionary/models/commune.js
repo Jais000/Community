@@ -12,4 +12,4 @@ const communeSchema = new mongoose.Schema({
     users: [mongoose.SchemaTypes.ObjectId]
 })
 
-const commune = module.exports = mongoose.model('commune',communeSchema);
+module.exports = mongoose.model('Commune',communeSchema);

@@ -5,7 +5,7 @@ let ejs = require('ejs')
 const Commune = require('./models/commune')
 const User = require('./models/user')
 const bodyParser = require("body-parser")
-
+const bcrypt = require('bcrypt')
 
 
 
@@ -13,29 +13,56 @@ var db = mongoose.connection;
 const app = express()
 mongoose.connect('mongodb://localhost:27017/Community')
 app.set("view engine","ejs");
-
 app.use(bodyParser.urlencoded({extended:true}))
 
+
+
+
+////////
+var activeUser
+app.post('/sign_in',async(req,res)=>{
+  const user = {name: req.body.email , password: req.body.password}
+  activeUser = await User.find({email:req.body.email})
+  res.status(201).send() 
+  console.log(activeUser)
+  })
+
+////////////
 app.get('/', async (req,res) => {
-  User.find({community:"Hope Chapel"})
+  Commune.find({})
   .then((result)=>{
-    var members = [];
-    result.forEach(member=>{
-      members.push(member.name);
+    var communities = [];
+    result.forEach(commune=>{
+      communities.push(commune.name);
     })
-    res.render('Homepage', {Community:'Hope',members: members})
+    res.render('userhome', {communities: communities})
   })
   .catch((err)=>{console.log(err.message)})}
 );
 
+
+
+
+/////////// Populate communities
+
+async function add(req){
+  await User.updateMany({email:'j'}, {$push:{communities:req.body.communities}})
+}
+app.post('/join',async(req,res)=>{
+  add(req)
+})
+////////////
 app.get('/signup',(req,res)=>{
   res.render('index')
 })
-
-app.listen(3000, function(){
+/////////////
+app.listen(4000, function(){
   console.log('running')})
-
-
+///////////
+app.get('/sign_in',(req,res)=>{
+  res.render('login')
+})
+///////////
 
 
 
@@ -46,14 +73,12 @@ app.post("/sign_up",(req,res)=>{
   var name = req.body.name; 
   var email = req.body.email;
   var phone = req.body.phone;
-  var pass = req.body.pass;
-  var community = req.body.community 
+  var pass = req.body.pass; 
   const user = User.create({
     name: name,
     email:email,
     phone:phone,
     pass:pass,
-    community:community
   })
   db.collection('users').insertOne(user,(err,collection)=>{
     if(err){
