@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const express = require("express")
 var bodyParser = require("body-parser")
-const Commune = require('./models/Commune')
+const Commune = require('./models/commune')
+const User = require('./models/user')
 
 
 
@@ -27,14 +28,14 @@ app.post("/sign_up",(req,res)=>{
   var phone = req.body.phone;
   var pass = req.body.pass;
   var community = req.body.community 
-  var data = {
-    "name": name,
-    "email": email,
-    "phone": phone,
-    "community": community,
-    "pass": pass
-  }
-  db.collection('users').insertOne(data,(err,collection)=>{
+  const user = User.create({
+    name: name,
+    email:email,
+    phone:phone,
+    pass:pass,
+    community:community
+  })
+  db.collection('users').insertOne(user,(err,collection)=>{
     if(err){
       throw err 
     }
