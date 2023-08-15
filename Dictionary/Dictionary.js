@@ -4,6 +4,7 @@ const express = require("express")
 let ejs = require('ejs')
 const Commune = require('./models/commune')
 const User = require('./models/user')
+const Active = require('./models/active')
 const bodyParser = require("body-parser")
 const bcrypt = require('bcrypt')
 
@@ -23,23 +24,59 @@ var activeUser
 app.post('/sign_in',async(req,res)=>{
   const user = {name: req.body.email , password: req.body.password}
   activeUser = await User.find({email:req.body.email})
+  console.log(await activeUser[0].name);
+  if(await Active.count() == 0){
+    console.log(await Active.count());
+    await Active.create({
+      name: await activeUser[0].name,
+      email: await activeUser[0].email,
+      phone: await activeUser[0].phone,
+      pass: await activeUser[0].pass,
+      communities: await activeUser[0].communities
+    })
+  }else{
+    console.log('updating many')
+    await Active.deleteMany()
+    await Active.create( {
+      name: await activeUser[0].name,
+      email: await activeUser[0].email,
+      phone: await activeUser[0].phone,
+      pass: await activeUser[0].pass,
+      communities: await activeUser[0].communities
+    })
+  }
   res.status(201).send() 
-  console.log(activeUser)
+  activeUser = await Active.find() 
   })
 
 ////////////
 app.get('/', async (req,res) => {
+  activeUser = await Active.find()
+  if(await Active.count() == 0){
+
+  
   Commune.find({})
   .then((result)=>{
     var communities = [];
     result.forEach(commune=>{
       communities.push(commune.name);
     })
-    res.render('userhome', {communities: communities})
+    
+    res.render('userhome', {communities: communities,user:''})
   })
   .catch((err)=>{console.log(err.message)})}
-);
+  else
+  {  Commune.find({})
+  .then((result)=>{
+    var communities = [];
+    result.forEach(commune=>{
+      communities.push(commune.name);
+    })
+    
+    res.render('userhome', {communities: communities, user: activeUser[0].name })}
+  )};})
 
+  //filter function
 
 
 

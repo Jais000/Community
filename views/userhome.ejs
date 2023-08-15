@@ -1,49 +1,60 @@
 <head>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan&family=Libre+Baskerville&display=swap" rel="stylesheet">
 </head>
+
 <body>
+
+
+    
+    
+    
     <div id="header">
         <h1>Community</h1>
+        <div>
+            <form class="search" action="/join" method="POST">
+                <input  placeholder= "Find a Community!" name="communities" id="communities"></input>
+            </form>
+        </div>
         <div id="links">
+            <a href="/settings" class="link"><%=user%></a>
             <a href="/signup" class ="link">Sign up</a>
             <a href="/sign_in" class ="link">Sign in</a>
             <a href="/" class ="link">Home</a>
         </div>
     </div>
     <div id= "container"> 
-        <ul id ="l" class= "side">
-            <li><a class = "slink" href="/communities">Communities</a></li>
-            <li><a class = "slink" href="/contacts">Contacts</a></li>
-            <li><a class = "slink" href="/events">Events</a></li>
-        </ul>
+        <div id ="l" class= "side">
+            <a class = "slink" href="/communities"><p>Communities</p></a>
+            <a class = "slink" href="/contacts"><p>Contacts</p></a>
+            <a class = "slink" href="/events"><p>Events</p></a>
+        </div>
 
         <div id="main">
             <div class = "overview">
                 <div class="profile">
-                    Welcome
+                    <p>Hello, <%=user%></p>
                 </div>
                 <div class="plans">
-                    Upcoming Events
+                    Here's your overview
+                </div>
+                <div class="overflow">
                 </div>
 
             </div>
             <div class = "misc"></div>
         </div>
-        <ul id ="r" class= "side">
-            <li><a class = "slink" href="/similar_communities">Similar Communities</a></li>
-            <li><a class = "slink" href="/Open_events">Global Events</a></li>
-            <li>
-                <form action="/join" method="POST">
-                    <select name="communities" id="communities">
-                        <% communities.forEach(commune=>{ %>
-                            <option value= <%=commune%>>  <%=commune%></option>
-                        <% }) %>
-                    </select><br>
-                    <button>Join Community</button>
-                </form>
+        <div id ="r" class= "side">
+            <a class = "slink" href="/similar_communities"><p>Similar Communities</p></a>
+            <a class = "slink" href="/Open_events"><p>Open Events</p></a>
+
             </li>
-            <li><a class = "slink" href="/settings">Settings</a></li>
-        </ul>
+            <a class = "slink" href="/settings"><p>Settings</p></a>
+        </div>
     </div>
 
 
@@ -54,53 +65,119 @@
 
 
 <style>
-        #header{
-    background-color: black;
-    color :white;
+    .searched{
+        color: 780000;
+        text-decoration: none;
+    }
+    .searched>*{
+        font-family: 'Libre Baskerville', serif;
+        margin:0px;
+        background-color:fdf0d5;
+        text-decoration: none;
+    }
+    .search{
+        position: absolute;
+        top: 5%;
+        left: 40%;
+        
+
+    }
+body{
+    background-color: FDF0D5;
+}
+#header{
+    background-color: 003049;
+    color :FDF0D5;
     display: flex;
     justify-content: space-between;
     padding:10px;
     padding-left:100px;
     align-items: center;
+    box-shadow:1px 1px 10px black;
 }
 
 #links{
     margin:0px;
     padding-right:50px;
+    font-family: 'Libre Baskerville', serif;
 }
 .link{
     color:white;
     text-decoration: none;
     margin:10px;
+    color: FDF0D5;
 }
 #l.side{
-    
+
     
     
 }
 #r.side{
-    
+
+}
+.side{
+    line-height: 100px;
+    font-family: 'League Spartan', sans-serif;
+    font-size: 40px;
+    text-decoration: none;
+    background-color:669BBC; 
+    opacity: .4;
+    margin:100px;
+    flex:1;
+    text-align: center;
+    box-shadow:2px 2px 10px black;
+}
+.slink{
+
+    text-decoration:none;
+    color:003049;
 }
 
 #main{
-    border:1px solid black;
-    height: 500px;
-    width: 400px;
-    margin: 10px;
-
-
-
+    background-color: 003049;
+    margin:50px;
+    height: 600px;
+    width: 600px;
+    flex:2;
+    text-align: center;
+    color: FDF0D5;
+    box-shadow:2px 2px 50px black;
 }
+
+
 
 #container{
     display:flex;
     justify-content: space-between;
 }
-    </style>
+h1{
+    font-family: 'League Spartan', sans-serif;
+    font-size:50px;
 
+}
 
+#communities{
+    height: 30px;
+    width: 400px;
+    margin-top: 10px;
+    background-color: FDF0D5;
 
-
+}
+.overflow{
+    overflow:scroll;
+    height: 560px;
+}
+::-webkit-scrollbar {
+    display: none;
+}
+.profile>{
+    width:100px;
+    height: 100px;
+}
+.profile>p{
+    font-size:100px;
+}
+</style>
 
 
 </body>
