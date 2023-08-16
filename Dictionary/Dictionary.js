@@ -7,7 +7,7 @@ const User = require('./models/user')
 const Active = require('./models/active')
 const bodyParser = require("body-parser")
 const bcrypt = require('bcrypt')
-
+const toId = mongoose.Types.ObjectId
 
 
 var db = mongoose.connection;
@@ -17,84 +17,58 @@ app.set("view engine","ejs");
 app.use(bodyParser.urlencoded({extended:true}))
 
 
-
+function f(model){
+  return JSON.parse(JSON.stringify(model))
+}
 
 ////////
 var activeUser
 app.post('/sign_in',async(req,res)=>{
   const user = {name: req.body.email , password: req.body.password}
   activeUser = await User.find({email:req.body.email})
-  console.log(await activeUser[0].name);
+  console.log(await activeUser[0]._id);
   if(await Active.count() == 0){
     console.log(await Active.count());
     await Active.create({
-      name: await activeUser[0].name,
-      email: await activeUser[0].email,
-      phone: await activeUser[0].phone,
-      pass: await activeUser[0].pass,
-      communities: await activeUser[0].communities
+      id: activeUser[0]._id
     })
   }else{
-    console.log('updating many')
     await Active.deleteMany()
     await Active.create( {
-      name: await activeUser[0].name,
-      email: await activeUser[0].email,
-      phone: await activeUser[0].phone,
-      pass: await activeUser[0].pass,
-      communities: await activeUser[0].communities
+      id: activeUser[0]._id 
     })
   }
   res.status(201).send() 
   activeUser = await Active.find() 
   })
 
-////////////
+//Home page //
 app.get('/', async (req,res) => {
-  activeUser = await Active.find()
-  if(await Active.count() == 0){
-
+  activeUser = await Active.findOne({}).populate({path: "_id" , model:"User"})
+  var name = JSON.parse(JSON.stringify(activeUser))._id.name
   
-  Commune.find({})
-  .then((result)=>{
-    var communities = [];
-    result.forEach(commune=>{
-      communities.push(commune.name);
-    })
-    
-    res.render('userhome', {communities: communities,user:''})
-  })
-  .catch((err)=>{console.log(err.message)})}
-  else
-  {  Commune.find({})
-  .then((result)=>{
-    var communities = [];
-    result.forEach(commune=>{
-      communities.push(commune.name);
-    })
-    
-    res.render('userhome', {communities: communities, user: activeUser[0].name })}
-  )};})
-
-  //filter function
+    res.render('userhome',{user: name})}
+  )
 
 
-
-/////////// Populate communities
-
+//Search communities//
 async function add(req){
   await User.updateMany({email:activeUser[0].email}, {$push:{communities:req.body.communities}})
 }
 app.post('/join',async(req,res)=>{
   var search =[]
   var input = Object.values(req.body)[0]
-
+  
   for(var i =0; i < (await Commune.find({})).length;i++){  
     console.log((await Commune.find({}))[0].name);
     if((await Commune.find({}))[i].name.includes(input)){
       search.push((await Commune.find({}))[i].name)
     }}
-  res.render('allcommunities',{communities:search})
+    var ids = []
+    for(var i=0;i<search.length;i++){
+        ids.push(f(await Commune.find({name:search[i]}))[0]._id) 
+    } 
+  res.render('allcommunities',{communities:search, ids: ids})
 })
 ////////////
 app.get('/signup',(req,res)=>{
@@ -108,27 +82,23 @@ app.get('/sign_in',(req,res)=>{
   res.render('login')
 })
 ///////////communities
-
-
 app.get('/communities',async (req,res)=>{
-  var redirects = []
-  activeUser = await Active.findOne({})
-  activeUser.communities.forEach(async (commune)=>{
-    await Commune.find({name:commune}).then((result)=>{
-      redirects.push(result[0].redirect)
-      }).catch((err)=>{
-      console.log(err);
-    })
-    })
-  
-  await res.render('communities',{redirects: redirects , communities:activeUser.communities})
-})
+  var comms = []
+  activeUser = await Active.findOne({}).populate({path: "_id" , model:"User"})
+  var communities = JSON.parse(JSON.stringify(await User.findById(JSON.parse(JSON.stringify(activeUser))._id._id))).communities
+  for(var i=0;i< await communities.length;i++){
+    var name = f(await Commune.findById(communities[i])).name
+    console.log(name)
+    comms.push(name)
+  }
+  res.render('communities', {communities:comms})
+}
+
+)
 
 
 
-
-
-//user post///////////////////////////
+//create user//
 app.post("/sign_up",(req,res)=>{
   var name = req.body.name; 
   var email = req.body.email;
@@ -152,7 +122,7 @@ app.post("/sign_up",(req,res)=>{
 })
 
 
-//community post/////////////////////////////
+//create community//
 app.post("/commune",(req,res)=>{
   var name = req.body.name; 
   var address = req.body.address;
@@ -176,47 +146,40 @@ app.post("/commune",(req,res)=>{
 
 
   app.get("/community:id", async (req,res)=>{
-    var name = req.url.split(":")[1]
-    console.log(req.url)
-    var commune = await Commune.find({name:name})
-    console.log(commune[0].name)
+    var id = req.url.split(":")[1]
+    console.log(req.url.split(":")[1])
+    var commune = f(await Commune.findById(id))
     res.render('communityhome',{commune: commune})
 })
 
-//Events
+//Events//
 app.get("/CreateEvent:id", async(req,res)=>{
-  var name = req.url.split(":")[1]
-  console.log(req.url)
-  var commune = await Commune.find({name:name})
-  console.log(commune[0].name)
-  res.render('createevent',{commune:commune})
+  var comm_id = req.url.split(":")[1]
+  console.log(f(await Commune.findById(comm_id)))
+  res.render('createevent',{id:comm_id})
+  
 })
-
+//CreateEvent//
 app.post('/submit:id',async(req,res)=>{
-  var name = req.url.split(":")[1]
+  
   var event = {
     name:req.body.name,
     time:req.body.date,
     location:req.body.location,
     misc:""
   }
-  await Commune.updateOne({name:name},{$push:{events:event}})})
+  await Commune.findByIdAndUpdate(  req.url.split(':')[1],{$push:{events:event}})
+})
   //Events page
 app.get("/events", async(req,res)=>{
   var commune = []
   var events = []
-  const active = (await mongoose.connection.db.collection('actives').findOne({})).name
-  const communes = (await mongoose.connection.db.collection('users').findOne({name:active})).communities
-
-  for(var i = 0;i<communes.length;i++){
-    console.log(communes[i])
-    events.push((await mongoose.connection.db.collection('communes').findOne({name:communes[i]})).
-    events)
+  var activeUser = await Active.findOne({}).populate({path: "_id" , model:"User"})
+  var communities = f(activeUser)._id.communities
+  for(var i = 0;i<communities.length;i++){
+    console.log(communities[i])
+    events.push(f(await Commune.findById(communities[i])).events)
     console.log(events)
-  }
-
-  for(var i = 0;i<events.length;i++){
-    
   }
   var eventnames = []
   var times = []
@@ -231,9 +194,10 @@ for(var i =0;i<events.length;i++){
 res.render('events',{names: eventnames ,times:times, locations: locations })
 })
 
-//Join//
+//Join community//
 app.get("/joincomm:id",async (req,res)=>{
+  activeUser = await Active.findOne({}).populate({path: "_id" , model:"User"})
   var name = req.url.split(":")[1]
-  console.log((await mongoose.connection.db.collection('actives').findOne({})).name )
-  await User.updateOne({name: (await mongoose.connection.db.collection('actives').findOne({})).name },{$push:{communities:name}})
+  var id = req.params.id.split(':')[1]
+  console.log(await User.findByIdAndUpdate(JSON.parse(JSON.stringify(activeUser))._id._id,{$push:{communities:id}}))
 })

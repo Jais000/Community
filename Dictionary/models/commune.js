@@ -3,14 +3,12 @@ const mongoose = require('mongoose');
 const communeSchema = new mongoose.Schema({
     name:{
         type: String,
-        required: true
         },
     address:{
         type:String,
-        required:false
         },
     users: [{type : mongoose.SchemaTypes.ObjectId, ref: 'User'}],
-    redirect: {type:String, required:true}, 
+    redirect: {type:String}, 
     events: [
         {name: String, 
         time : {type: String, default:Date.now},
