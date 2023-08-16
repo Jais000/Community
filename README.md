@@ -26,3 +26,7 @@ Will they evolve? How?
 What is the impact on this economy?
 How much money can an influencer make, hosting events with this level of ease? How many people will this pull in? 
 
+Feature
+Gas estimation for commuting.
+Location services required. 
+
