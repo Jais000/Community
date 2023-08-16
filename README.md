@@ -14,3 +14,8 @@ Group outings!
 Three, four, five or fifty friends might want to go to a bar. An admin selects one of many locations. Of entertainment section, such will select bar, and of bar, such will select locations by 
 occasion, costs, city, etc. The bar will be notified, and they will immediately begin developing the drinks. As the group arrives by Uber or once roaming autopiloted vehicles, they can be immmediately served.
 We will take a small cut of the tab. 
+
+In under a minute, can hundreds coordinate pay and initiate in the endeavor for a complex outing. 
+You can even start a business with little to no effort.
+You can merge communities for super communities. 
+The possibilities are endless. 
