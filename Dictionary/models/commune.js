@@ -4,20 +4,23 @@ const communeSchema = new mongoose.Schema({
     name:{
         type: String,
         required: true
-    },
+        },
     address:{
         type:String,
         required:false
-    },
-    users: [mongoose.SchemaTypes.ObjectId],
+        },
+    users: [{type : mongoose.SchemaTypes.ObjectId, ref: 'User'}],
     redirect: {type:String, required:true}, 
     events: [
         {name: String, 
-        time : {type: Date, default:Date.now},
-        location: [String],
+        time : {type: String, default:Date.now},
+        location: String,
         misc: []
         }
-    ] 
+        ] ,
+    admins: [
+        {type: mongoose.SchemaTypes.ObjectId, ref:'User'}
+        ]
     
 })
 

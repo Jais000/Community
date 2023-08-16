@@ -177,7 +177,63 @@ app.post("/commune",(req,res)=>{
 
   app.get("/community:id", async (req,res)=>{
     var name = req.url.split(":")[1]
+    console.log(req.url)
     var commune = await Commune.find({name:name})
     console.log(commune[0].name)
     res.render('communityhome',{commune: commune})
+})
+
+//Events
+app.get("/CreateEvent:id", async(req,res)=>{
+  var name = req.url.split(":")[1]
+  console.log(req.url)
+  var commune = await Commune.find({name:name})
+  console.log(commune[0].name)
+  res.render('createevent',{commune:commune})
+})
+
+app.post('/submit:id',async(req,res)=>{
+  var name = req.url.split(":")[1]
+  var event = {
+    name:req.body.name,
+    time:req.body.date,
+    location:req.body.location,
+    misc:""
+  }
+  await Commune.updateOne({name:name},{$push:{events:event}})})
+  //Events page
+app.get("/events", async(req,res)=>{
+  var commune = []
+  var events = []
+  const active = (await mongoose.connection.db.collection('actives').findOne({})).name
+  const communes = (await mongoose.connection.db.collection('users').findOne({name:active})).communities
+
+  for(var i = 0;i<communes.length;i++){
+    console.log(communes[i])
+    events.push((await mongoose.connection.db.collection('communes').findOne({name:communes[i]})).
+    events)
+    console.log(events)
+  }
+
+  for(var i = 0;i<events.length;i++){
+    
+  }
+  var eventnames = []
+  var times = []
+  var locations = []
+for(var i =0;i<events.length;i++){
+  for(var j = 0;j<events[i].length;j++){
+    eventnames.push(events[i][j].name)
+    times.push(events[i][j].time)
+    locations.push(events[i][j].location)
+  }
+}
+res.render('events',{names: eventnames ,times:times, locations: locations })
+})
+
+//Join//
+app.get("/joincomm:id",async (req,res)=>{
+  var name = req.url.split(":")[1]
+  console.log((await mongoose.connection.db.collection('actives').findOne({})).name )
+  await User.updateOne({name: (await mongoose.connection.db.collection('actives').findOne({})).name },{$push:{communities:name}})
 })
