@@ -19,3 +19,10 @@ In under a minute, can hundreds coordinate pay and initiate in the endeavor for 
 You can even start a business with little to no effort.
 You can merge communities for super communities. 
 The possibilities are endless. 
+
+Get ready economists, this will be a fun one. What will be the impact of the precipitous increase in outing size and frequency!?
+Bars, movie theaters, musicians, and dining locations will now be serving hundreds to thousands by what unit of time? All of those transactions! 
+Will they evolve? How?
+What is the impact on this economy?
+How much money can an influencer make, hosting events with this level of ease? How many people will this pull in? 
+
