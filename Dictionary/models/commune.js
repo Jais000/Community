@@ -10,7 +10,7 @@ const communeSchema = new mongoose.Schema({
         required:false
     },
     users: [mongoose.SchemaTypes.ObjectId],
-    redirect: String, 
+    redirect: {type:String, required:true}, 
     events: [
         {name: String, 
         time : {type: Date, default:Date.now},

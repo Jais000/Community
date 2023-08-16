@@ -8,9 +8,12 @@
             <a href="/" class ="link">Home</a>
         </div>
     </div> 
-    <% communities.forEach(commune => {%>
-        <h3 class="commune"> <%=commune %></h3>
-    <%})%>
+    <% for(var i = 0;i<communities.length;i++){ %>
+        <a href= <%= "/community:"+ communities[i] %> class=<%=communities[i] %>> <%=communities[i] %></a>
+    <% } %>
+    
+
+
 
     <style>
         #header{
@@ -33,12 +36,8 @@
     margin:10px;
 }
 #l.side{
-    
-    
-    
 }
 #r.side{
-    
 }
 
 #main{
@@ -46,9 +45,6 @@
     height: 500px;
     width: 400px;
     margin: 10px;
-
-
-
 }
 
 #container{
@@ -56,4 +52,5 @@
     justify-content: space-between;
 }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </body>

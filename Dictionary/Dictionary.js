@@ -86,7 +86,15 @@ async function add(req){
   await User.updateMany({email:activeUser[0].email}, {$push:{communities:req.body.communities}})
 }
 app.post('/join',async(req,res)=>{
-  add(req)
+  var search =[]
+  var input = Object.values(req.body)[0]
+
+  for(var i =0; i < (await Commune.find({})).length;i++){  
+    console.log((await Commune.find({}))[0].name);
+    if((await Commune.find({}))[i].name.includes(input)){
+      search.push((await Commune.find({}))[i].name)
+    }}
+  res.render('allcommunities',{communities:search})
 })
 ////////////
 app.get('/signup',(req,res)=>{
@@ -101,15 +109,19 @@ app.get('/sign_in',(req,res)=>{
 })
 ///////////communities
 
-async function community(){
-  activeUser = await User.find({email:activeUser[0].email})
-  return activeUser
-}
-app.get('/communities',async (req,res)=>{
 
-  community();
-  //console.log(activeUser[0].communities)
-  await res.render('communities',{communities:activeUser[0].communities})
+app.get('/communities',async (req,res)=>{
+  var redirects = []
+  activeUser = await Active.findOne({})
+  activeUser.communities.forEach(async (commune)=>{
+    await Commune.find({name:commune}).then((result)=>{
+      redirects.push(result[0].redirect)
+      }).catch((err)=>{
+      console.log(err);
+    })
+    })
+  
+  await res.render('communities',{redirects: redirects , communities:activeUser.communities})
 })
 
 
@@ -144,10 +156,11 @@ app.post("/sign_up",(req,res)=>{
 app.post("/commune",(req,res)=>{
   var name = req.body.name; 
   var address = req.body.address;
-
+  var domain = req.body.redirect; 
   const commune = Commune.create({
     name: name,
-    address: address
+    address: address,
+    redirect: domain
   })
 
   db.collection('users').insertOne(commune,(err,collection)=>{
@@ -162,4 +175,9 @@ app.post("/commune",(req,res)=>{
 })
 
 
-
+  app.get("/community:id", async (req,res)=>{
+    var name = req.url.split(":")[1]
+    var commune = await Commune.find({name:name})
+    console.log(commune[0].name)
+    res.render('communityhome',{commune: commune})
+})

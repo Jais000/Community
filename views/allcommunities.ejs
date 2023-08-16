@@ -1,18 +1,25 @@
-3<head></head>
+<head></head>
 <body>
+
+
     <div id="header">
         <h1>Community</h1>
         <div id="links">
-            <a href="/settings" class="link"><%=user%></a>
-            <a href="/settings" class="link">User</a>
             <a href="/signup" class ="link">Sign up</a>
             <a href="/sign_in" class ="link">Sign in</a>
             <a href="/" class ="link">Home</a>
         </div>
     </div> 
-    <% communities.forEach(commune => {%>
-        <h3 class="commune"> <%=commune %></h3>
-    <%})%>
+    <div class="body">
+        <div class="search">
+            <% for(var i = 0;i<communities.length;i++){ %>
+                <a href= <%= "/community:"+ communities[i] %> class=<%=communities[i] %>> <%=communities[i] %></a>
+            <% } %>
+        </div>
+    </div>
+    
+
+
 
     <style>
         #header{
@@ -35,12 +42,8 @@
     margin:10px;
 }
 #l.side{
-    
-    
-    
 }
 #r.side{
-    
 }
 
 #main{
@@ -48,9 +51,6 @@
     height: 500px;
     width: 400px;
     margin: 10px;
-
-
-
 }
 
 #container{
@@ -58,4 +58,5 @@
     justify-content: space-between;
 }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </body>
