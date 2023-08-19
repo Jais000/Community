@@ -3,13 +3,23 @@
 
     </head>
     <body>
-        <h1>Hello, <%=name%>!</h1>
-        <form action="/signin" method="GET">
-            <button>Sign In</button>
-        </form>
         <form action="/search" method="POST">
             <input  name="search" id="search" placeholder="Search for Communities!">
-            
         </form>
+        <% if(status==1){%>
+            <h1>Hello<%=", "+name%></h1>
+            <form action="/signout" method="POST">
+                <button>Sign Out</button>
+            </form>
+            <a href="/create_community">Create Community</a>
+            <a href=<%='/myCommunities/:'+id%>>My Communities</a> 
+            <a href=<%='/user_events/:'+id%>>My Events</a>            
+        <%}else{%>
+            <h1>Hello</h1>
+            <form action="/signin" method="GET">
+                <button>Sign In</button>
+            </form>            
+            <%}%>
+
     </body>
 </html>

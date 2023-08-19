@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+    <head>
+
+    </head>
+    <body>
+        <%for(var i =0;i<events.length;i++){%>
+            <a href="#">
+                        <div>
+                        <h3><%=comms[i].name%></h3>
+                        <p>Name: <%=events[i].name%></p><br>
+                        <p>Time: <%=events[i].time%></p><br>
+                        <p>Location: <%=events[i].loc%></p><br>
+                        </div>
+            </a>    
+        <%}%>
+    </body>
+</html>
