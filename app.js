@@ -36,18 +36,31 @@ app.post('/search',async(req,res)=>{
     res.render('searchcommunities',{names:names,ids:ids})
 
 })
-
+//Create Community//
 app.post('/submitcomm', async(req,res)=>{  
-    cql.createCommunity(req.body.name)
     var logged = await cql.getActiveId()
+    await cql.createCommunity(req.body.name,logged)
     res.render('home', {name:name, status:logged[0].isloggedin,id:logged[0].id})
 })
 
 //route to community page//
 app.get('/community/:id', async(req,res)=>{
+    var usercommids = []
     var [comm] = await cql.getCommunityById(req.params.id.split(':')[1])
-    console.log(comm)
-    res.render('communityhome',{name:comm.name,id:comm.id})
+    
+    var [user] = await cql.getActiveId()
+    console.log(user)
+    var usercomms = await cql.getCommunitiesByUserId(user.id)
+    usercomms.forEach(comm=>{
+        usercommids.push(comm.commune_id)
+    })
+    if(usercommids.includes(comm.id)){   
+        var status = await cql.isAdmin(user.id,comm.id)
+        console.log(status)
+    }else{
+        status = 0
+    }
+    res.render('communityhome',{name:comm.name,id:comm.id,status:status})
 })
 //route to my communities page//
 app.get('/MyCommunities/:id', async(req,res)=>{
@@ -114,7 +127,7 @@ app.post('/join/:id',async(req,res)=>{
     var activeId = await cql.getActiveId()
     cql.joinCommunity(activeId[0].id,comm_id)
 
-    res.render('communityhome',{name:comm.name,id:comm.id})
+   // res.render('communityhome',{name:comm.name,id:comm.id})
 })
 
 //Render events for the user//

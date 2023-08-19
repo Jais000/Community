@@ -11,11 +11,27 @@ const pool = mysql.createPool({
 
 /////////////////////////COMMUNITY/////////////////////////////////
 
-export async function createCommunity(name){
+export async function createCommunity(name,user){
+    var userid=user[0].id
     await pool.query(`
         INSERT INTO communes (name)
         VALUES (?)
     `,[name])
+
+    var [[commune]] = await pool.query(`
+        select * from communes order by id desc limit 1
+    `)
+    console.log(commune.id)
+    await pool.query(`
+        INSERT INTO users_has_communes (user_id, commune_id)
+        VALUES (?,?)
+    `,[userid,commune.id])
+    await pool.query(`
+        UPDATE users_has_communes
+        SET isAdmin = 1
+        WHERE user_id = ? AND commune_id = ? 
+    `,[userid, commune.id])   
+
 }
 export async function getCommunities(){
     const [rows] = await pool.query(`
@@ -127,4 +143,12 @@ export async function getCommunityEventsByUserId(user_id){
     join users on users.id = users_has_communes.user_id where users.id = ?;
     `,[user_id])
     return rows
+}
+
+export async function isAdmin(user_id, comm_id){
+    const [status] = await pool.query(`
+        select * from users_has_communes where user_id = ? AND commune_id = ?
+    `,[user_id,comm_id])
+    console.log(status[0])
+    return status[0].isAdmin
 }

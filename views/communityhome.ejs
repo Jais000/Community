@@ -8,12 +8,14 @@
             <button>Join Community</button>
         </form>
 
+        <%if(status==1){%>
         <form action= <%="/create_event/:"+id%> method="POST">
             <h2>Create an Event</h2>
             <input type ="text" id = "name" name = "name" placeholder="name"><br>
             <input type="text" id="loc" name="loc" placeholder="location"><br>
             <input type="datetime" id="time" name="time" placeholder="time"><br>
             <button>submit</button>
-        </form>    
+        </form>
+        <%}%>    
     </body>
 </html>
