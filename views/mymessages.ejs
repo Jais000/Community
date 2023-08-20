@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+    <head>
+        <link rel="stylesheet" href="/css/search.css">
+    </head>
+
+    <body>
+        <%for(var i =0;i<senders.length;i++){%>
+            <div>
+                <p><%=senders[i].name%></p><br>
+                <p><%=messages[i].Message%></p>
+            </div>    
+        <%}%>
+    </body>
+</html>

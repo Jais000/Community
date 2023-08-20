@@ -74,6 +74,16 @@ export async function createEvent(comm_id, event){
     `,[cnt, comm_id])
 }
 
+export async function getUsersByCommunity(id){
+    const [members] = await pool.query(`
+    select user_id,isAdmin,name,email from users_has_communes 
+    join users on users_has_communes.user_id = users.id 
+    where commune_id = ?;
+    `,[id])
+    return members
+}
+
+
 ///////////////////////////USER////////////////////////////////////
 export async function signin(id){
     await pool.query(`
@@ -118,10 +128,9 @@ export async function getUserIdByEmail(email){
 }
 export async function getUserById(id){
     const [rows] = await pool.query(`
-        SELECT * 
-        FROM users 
-        WHERE id = ?
+        select * from users where id =?
     `, [id])
+    console.log(rows)
     return rows[0]
 }
 export async function getUsers(){
@@ -151,4 +160,63 @@ export async function isAdmin(user_id, comm_id){
     `,[user_id,comm_id])
     console.log(status[0])
     return status[0].isAdmin
+}
+export async function addContact(activeId,contactId){
+    await pool.query(`
+        INSERT INTO users_has_users (users_id,users_id1)
+        VALUES (?,?)
+    `,[activeId,contactId])
+    await pool.query(`
+        INSERT INTO users_has_users (users_id,users_id1)
+        VALUES (?,?)
+    `,[contactId,activeId])
+}
+export async function getContactsById(id){
+    var [rows] = await pool.query(`
+        select users_id1 from users_has_users where users_id= ?
+    `,[id])
+    return rows 
+}
+export async function postMessage(fromid,toid,message){
+    await pool.query(`
+        INSERT INTO messages (Message)
+        VALUES (?)
+    `,[message])
+
+    var [[messageid]] = await pool.query(`
+        select * from messages order by id desc limit 1
+    `)
+    console.log(toid)
+    await pool.query(`
+    INSERT INTO users_has_messages (users_id,messages_id,isSender)
+    VALUES (?,?,?)
+    `,[fromid,messageid.id,1])
+    await pool.query(`
+    INSERT INTO users_has_messages (users_id,messages_id,isSender)
+    VALUES (?,?,?)
+    `,[toid,messageid.id,0])
+    
+}
+export async function getMessagesById(id){
+    var senders = []
+    var users =[]
+    var [rows] = await pool.query(`
+    select messages.id,Message from messages join users_has_messages 
+    on messages.id = users_has_messages.messages_id 
+    join users on  users.id = users_has_messages.users_id
+    where isSender = 0 and users_id = ?;
+    `,[id])
+    for (var i =0;i<rows.length;i++){
+        var [[sender]] = await pool.query(`
+        select users_id from users_has_messages where isSender=1 and messages_id=?;
+        `,[rows[i].id])
+        senders.push(sender.users_id)
+    }
+    for (var i =0;i<senders.length;i++){
+        var [[sent]] = await pool.query(`
+        select * from users where id=?;
+        `,[senders[i]])
+        users.push(sent)
+    }
+    return [users,rows]
 }

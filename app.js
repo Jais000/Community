@@ -9,9 +9,13 @@ app.set('views','C://Users//Jais//OneDrive//Projects//Communities//views')
 app.set('view engine','ejs')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
-app.get('',async (req,res)=>{
+app.use(express.static('Communities/public'))
+
+app.get('/',async (req,res)=>{
     const users = await cql.getUsers()
-    res.render('home',{name:name})
+    const [activeuser] = await cql.getActiveId()
+    const status = activeuser.isloggedin
+    res.render('home',{name:name,status:status,id:activeuser.id})
 })
 
 
@@ -23,17 +27,25 @@ app.post('/search',async(req,res)=>{
     var searched = []
     var names = []
     var ids = []
+    var searchedusers=[]
+    var users = await cql.getUsers()
     var search = req.body.search.toLowerCase()
     var comms = await cql.getCommunities()
     for(var i=0; i<comms.length;i++){
         if(comms[i].name.toLowerCase().includes(search) == true)
             {searched.push(comms[i])}
     }
+    for(var i = 0;i<users.length;i++){
+        if(users[i].name.toLowerCase().includes(search) == true)
+            {searchedusers.push(users[i])}        
+    }
+    console.log(searchedusers[0].id)
     searched.forEach(comm=>{
         names.push(comm.name)
         ids.push(comm.id)
     })
-    res.render('searchcommunities',{names:names,ids:ids})
+    
+    res.render('searchcommunities',{names:names,ids:ids,users:searchedusers})
 
 })
 //Create Community//
@@ -84,6 +96,14 @@ app.get('/create_community', async(req,res)=>{
     res.render('create_community');
 })
 
+
+//route to viewmembers//
+app.get('/members/:id',async (req,res)=>{
+    const members = await cql.getUsersByCommunity(req.params.id.split(':')[1])
+    res.render('members',{members:members});
+})
+
+
 ///////////////////////////USER////////////////////////////////////
 
 //Sign up//
@@ -91,8 +111,9 @@ app.post('/submit',async (req,res)=>{
     var name = req.body.name
     var email = req.body.email
     var password = req.body.password
-    cql.createUser(name,password,email)
-    res.render('home')
+    var [logged] = await cql.getActiveId()
+    await cql.createUser(name,password,email)
+    res.render('home',{status:logged.isloggedin, id:logged.id})
 })
 
 
@@ -105,8 +126,9 @@ app.get('/signin',async (req,res)=>{
 app.post('/s',async (req,res)=>{
     var id = await cql.getUserIdByEmail(req.body.email)
     console.log(id.id)
-    var user = await cql.getUserById(id)
+    var user = await cql.getUserById(id.id)
     cql.signin(id.id)
+    console.log(user)
     name = user.name 
     var logged = await cql.getActiveId()
     console.log(logged)
@@ -121,6 +143,7 @@ app.post('/signout',async (req,res)=>{
 })
 
 //join community//
+
 app.post('/join/:id',async(req,res)=>{
     var comm_id = req.params.id.split(':')[1]
     var [comm] = await cql.getCommunityById(req.params.id.split(':')[1])
@@ -142,4 +165,43 @@ app.get('/user_events/:id',async(req,res)=>{
         console.log(comms)
     }
     res.render('user_events', {events:j_events,comms:comms})
+})
+//mycontacts//
+app.get('/mycontacts/:id',async(req,res)=>{
+    var contacts = [] 
+    var contactids = await cql.getContactsById(req.params.id.split(':')[1])
+    console.log(contactids[0])
+    for(var i =0;i<contactids.length;i++){
+        contacts.push(await cql.getUser(contactids[i].users_id1))
+    }
+    
+    res.render('MyContacts', {contacts:contacts})
+})
+app.get('/userpage/:id',async(req,res)=>{
+    var userId = req.params.id.split(':')[1]
+    res.render('userspage',{userid:userId})
+})
+app.get('/addcontact/:id',async(req,res)=>{
+    var [self] = await cql.getActiveId()
+    console.log(self)
+    var contact = req.params.id.split(':')[1]
+    await cql.addContact(self.id,contact)
+})
+
+//messages//
+app.post("/message/:id", async(req,res)=>{
+    var message = req.body.message;
+    console.log(message)
+    var toid = req.params.id
+    var [fromid] = await cql.getActiveId()
+    console.log(toid)
+    await cql.postMessage(fromid.id,toid,message)
+})
+//route to my messages//
+app.get('/mymessages/:id',async(req,res)=>{
+
+    var id = req.params.id.split(':')[1]
+    var um=await cql.getMessagesById(id)
+    console.log(um[1][0].Message)
+    res.render('mymessages',{senders:um[0],messages:um[1]})
 })

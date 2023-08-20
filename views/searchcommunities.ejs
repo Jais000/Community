@@ -1,10 +1,25 @@
 <!DOCTYPE html>
     <head>
-
+        <link rel="stylesheet" href="/css/search.css">
     </head>
+
     <body>
+        <div class = "header">
+            <a class="link" href="/">Home</a>
+        </div>
+        <div class="container">
+            <div class = "Communities">
+                <h1>Communities</h1>
             <%for(var i=0;i<names.length;i++){%>
-                <a href=<%="/community/:"+ids[i]%>><%=names[i]%></a>
+                <div class = "item"><a href=<%="/community/:"+ids[i]%>><%=names[i]%></a></div>
             <%}%>
+            </div>
+            <div class = 'users'>
+                <h1>Users</h1>
+                <%for(var i=0;i<users.length;i++){%>
+                    <div class = "item"><a href=<%="/userpage/:"+users[i].id%>><%=users[i].name%></a></div>
+                <%}%>                
+            </div>
+        </div>
     </body>
 </html>
