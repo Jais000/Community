@@ -39,7 +39,6 @@ app.post('/search',async(req,res)=>{
         if(users[i].name.toLowerCase().includes(search) == true)
             {searchedusers.push(users[i])}        
     }
-    console.log(searchedusers[0].id)
     searched.forEach(comm=>{
         names.push(comm.name)
         ids.push(comm.id)
@@ -202,6 +201,5 @@ app.get('/mymessages/:id',async(req,res)=>{
 
     var id = req.params.id.split(':')[1]
     var um=await cql.getMessagesById(id)
-    console.log(um[1][0].Message)
     res.render('mymessages',{senders:um[0],messages:um[1]})
 })
