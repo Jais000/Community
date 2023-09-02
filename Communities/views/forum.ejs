@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<head>
+    <link href="/css/forum.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
+</head>
+
+<body>
+    <div class='navbar'>
+        <div class="leftLinks">
+            <h3>Community</h3>
+            <a id="home" href="/">Home</a>
+        </div>
+        <div class="search">
+            <form action="/search" method="POST">
+                <input name="search" id="search" placeholder="Search for Communities!">
+            </form>
+        </div>
+        <div class="rightLinks">
+            <a id="settings">Settings</a>
+            <a id="account">Account</a>
+            <form action=" /signout" method="POST">
+                <button>Sign Out</button>
+            </form>
+        </div>
+    </div>
+
+    <h1 class="title">Welcome to <%=name%>'s Forum</h1>
+    <div class="sidebar">
+        <div>
+            <a class="link" href=<%="/community/:" +id%>>Community Home</a>
+            <a class="link" href=<%="/chat/:" +id%>>Chatroom</a>
+            <a class="link" href=<%="/forum/:" +forumId%>>Forum</a>
+            <a class="link" href="#">Members</a>
+            <a class="link" href=<%="/PostPage/:"+forumId%>>Create Post</a>
+            <a class="link" href=<%="/createForumPage/:"+forumId%>>Create Forum</a>
+        </div>
+    </div>
+    <div class="body">
+        <div class="subhead" style="display:flex;justify-content: space-between;">
+        <h1 class="forum-title"><%=forum.name%></h1>
+        
+        <form action=<%="/forumsearch/:"+forumId%> method="POST">
+            <input required="true" name="search" type="text" placeholder="Search for Forums">
+            <button class="btn btn-secondary">Search</button>
+        </form>
+    
+    </div>
+        <%for(var i = 0; i<posts.length;i++){%>
+
+         <a href=<%="/post/:"+ posts[i].id%> class="post">
+            <div class="score"><%=posts[i].votes%></div>
+            <div>
+                <h3 class="post-name">
+                    <%=posts[i].title%>
+                </h3>
+                <div class="subtitle">
+                    <div class="info">
+                        <div class = 'left-info'>
+                        <p style="font-weight: bold;"><%=forum.name%></p>
+                        <div class="comments"><%=commentCounts[i]%> comments</div>
+                        </div>
+                        <div class="time">
+                            <p ><%=posts[i].created_at%></p>
+                            <!-- <p>1/31/23</p> -->
+                            </div>
+                    </div>
+                    
+                    <p class="poster"><%=users[i].name%></p>
+
+                </div>
+            </div> 
+        </a>
+        <%}%>
+    </div>
+
+
+
+</body>
+
+</html>
