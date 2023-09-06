@@ -1,0 +1,18 @@
+body{
+
+}
+.container{
+    padding:10%;
+    margin:0 auto;
+
+    text-align: center;
+    width:10%;
+}
+.item{
+    margin-top: 40px;
+    margin-bottom:40px;
+}
+.link{
+    float:right;
+    margin:60px;
+}
