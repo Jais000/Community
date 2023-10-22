@@ -1,0 +1,18 @@
+.weekday{
+    
+    height:350px;
+    width:150px;
+    border: 1px solid black;
+
+}
+.hour{
+    width: 150px;
+    height: 12px;
+    border-bottom: 1px solid gray ;
+}
+.Week{
+
+    display: flex;
+    justify-content: space-evenly;
+
+}

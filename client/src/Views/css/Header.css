@@ -1,0 +1,15 @@
+.head_body{
+    display: flex;
+    align-items: center;
+    height:100px;
+    justify-content: space-around;
+}
+.right{
+    display:flex;
+    justify-content: right;
+    align-items: center;
+
+}
+.right>*{
+    margin:10px;
+}

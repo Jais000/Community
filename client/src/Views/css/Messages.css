@@ -1,0 +1,4 @@
+.messages_cont{
+    display: flex;
+    flex-direction: column;
+}
